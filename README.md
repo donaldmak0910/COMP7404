@@ -65,4 +65,38 @@ To get the best of both world, “Boosted Random Forest” is suggested to reduc
     1) Are the rules/tree structures constructed being useful/too general?
     2) Training time
     3) Model size
-    5) Test set preditction error with different depths
+    4) Test set preditction error with different depths
+
+## 3. Curse of Dimensionality, Remedies to Complexity
+#### 3.1 Description
+
+One challenge in machine learning is that there are often too many parameters in a data set, and some of them are irrelevant or redundant. With feature selection, a subset of useful and relevant variables are chosen in model construction. This technique not only reduces training time, but also often improves accuracy of the final hypothesis. A few feature selection methods will be explained with a demonstration to compare performance of modelling with and without feature selection.
+
+#### 3.2 Methodology
+General Idea:
+
+Remove features that are considered to be redundant from the feature set. Evaluation can be made by considering correlations/distances between features, or other metrics that are designed specifically for feature selection algorithms. Feature selection algorithms to be tested:
+ 1. Brute-force Selection
+     1. Exhausive selection over all possible subset
+ 2. Greedy Forward Selection/Greedy Backward Elimination
+     1.  Greedy Algorithm to select features in building/trimming the feature set
+ 3. Variable Neighborhood Search
+     1. Explore distant features first and move them if improvement is to be made
+ 4. Correlation Feature Selection
+     1. "Good feature subsets contain features highly correlated with the classification, yet uncorrelated to each other"
+
+Controlled Settings:
+ * Classifier: Random Forest Tree
+
+#### 3.3 Demo to be Implemented
+* Dataset:
+   * Kaggle Competition: Quora Insincere Questions Classification
+   * https://www.kaggle.com/c/quora-insincere-questions-classification
+* Reason of Choosing This Dataset
+    1) 45000+ instances and 17 attributes which are good scales for testing algorithm efficiency
+    2) Real data for business implication
+    3) Widely used in other studies
+* Comparisons on algorithms
+    1) Classification Accurary
+    2) Speed of selecting features
+    3) Selected sets of features
