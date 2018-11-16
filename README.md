@@ -93,9 +93,9 @@ Controlled Settings:
    * Kaggle Competition: Quora Insincere Questions Classification
    * https://www.kaggle.com/c/quora-insincere-questions-classification
 * Reason of Choosing This Dataset
-    1) 45000+ instances and 17 attributes which are good scales for testing algorithm efficiency
-    2) Real data for business implication
-    3) Widely used in other studies
+    1) ???
+    2) ???
+    3) ???
 * Comparisons on algorithms
     1) Classification Accurary
     2) Speed of selecting features
