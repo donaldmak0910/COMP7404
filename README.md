@@ -3,7 +3,7 @@
 ### Group Project Proposal
 
 ## Group Members:
-* 
+* Lee Kai Shing 3035562540
 * Mak Tak Hei 3035420273
 * Lui Sin Ying Bianca 2010085577
 * Lo Rocky 3035420077
@@ -93,9 +93,8 @@ Controlled Settings:
    * Kaggle Competition: Quora Insincere Questions Classification
    * https://www.kaggle.com/c/quora-insincere-questions-classification
 * Reason of Choosing This Dataset
-    1) ???
-    2) ???
-    3) ???
+    1) Bag of words dataset, feature selection is applicable to select the most relevant keywords to classification result
+    2) Works from other fellows, comparisons can be made on performances from different works
 * Comparisons on algorithms
     1) Classification Accuracy
     2) Speed of selecting features
