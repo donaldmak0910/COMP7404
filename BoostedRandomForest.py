@@ -1,4 +1,5 @@
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
 from sklearn import tree
 import pandas as pd 
 import numpy as np
@@ -31,7 +32,8 @@ class BoostedRandomForest :
         self.alphas = []
         # features selected for each tree in forest
         self.feature_record = pd.DataFrame()
-    
+        # List of accuracies during training
+        self.train_accs = []
     
     
     # Train boosted random forest
@@ -58,16 +60,17 @@ class BoostedRandomForest :
             print("--------------------------")
             
         for i in range(1,self.T+1):
-            print("in loop ", i )
+            if self.verbose :
+                print("in loop ", i )
             # Prepare training sample subset (bagging)
-            X_train_sample, X_test_sample, y_train_sample, y_test_sample = train_test_split(X, y, test_size=self.sample_portion)
+            X_train_sample, X_test_sample, y_train_sample, y_test_sample = train_test_split(X, y, test_size=self.sample_portion, shuffle=True)
             # Sample feautres to be used for current tree
             selected_features =  [random.randint(0,N-1) for j in range(0,int(round(N*feature_portion)))]
-            # Save selected features for the tree
-            self.feature_record = self.feature_record.append(pd.DataFrame([selected_features]), ignore_index=True)    
             X_train_sample = X_train_sample.iloc[:,selected_features]
             X_test_sample = X_test_sample.iloc[:,selected_features]
-            
+            # Save selected features for the tree
+            self.feature_record = self.feature_record.append(pd.DataFrame([selected_features]), ignore_index=True)    
+                        
             # Prepare tree classifier
             clf = tree.DecisionTreeClassifier(criterion=self.criterion, max_depth=self.depth_max)
             # Weight of training samples
@@ -106,7 +109,7 @@ class BoostedRandomForest :
                 else:
                     #weihtout updating
                     W = [1.0/m for i in range(0,m,1)]
-                    W = pd.DataFrame({'Weight':list(W)}, index=X_train.index)
+                    W = pd.DataFrame({'Weight':list(W)}, index=X.index)
 
                 # Save trained tree to list 
                 self.clfs.append(clf)
@@ -115,6 +118,17 @@ class BoostedRandomForest :
 
                 if self.boosting==True:
                     alphas_ = self.alphas/sum(self.alphas)
+                    
+                    # Predict with trees trained so far
+                    pred = self.ensemble_predict(X)
+                    # Record accuracy
+                    self.train_accs.append(accuracy_score(y, pred))
+                else :
+                    # Predict with trees trained so far
+                    pred = self.RF_predict(X)
+                    # Record accuracy
+                    self.train_accs.append(accuracy_score(y, pred))
+                    
 
             else :
                 # If alpha < 0, reject the tree
@@ -147,7 +161,7 @@ class BoostedRandomForest :
         # Calculate class probabilities
         prob_mat=np.empty([0, X.shape[0]])
         for i in range(0,len(self.clfs)):
-            prob = self.clfs[i].predict_proba(X.iloc[:,list(self.feature_record_.iloc[i,:])])[:,1]
+            prob = self.clfs[i].predict_proba(X.iloc[:,list(self.feature_record.iloc[i,:])])[:,1]
             prob_mat = np.vstack ((prob_mat,prob))
         prob_mat = np.transpose(prob_mat)
         
