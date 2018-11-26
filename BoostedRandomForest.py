@@ -34,6 +34,10 @@ class BoostedRandomForest :
         self.feature_record = pd.DataFrame()
         # List of accuracies during training
         self.train_accs = []
+        # List of error rates for all trees trained (incl. rejected trees)
+        self.all_eps = []
+        # List of tree weights for all trees trained (incl. rejected trees)
+        self.all_alphas = []
     
     
     # Train boosted random forest
@@ -85,17 +89,21 @@ class BoostedRandomForest :
             eps = sum(np.array(W)[(np.ravel(pred) != np.ravel(y))]) / sum(np.array(W))
             if self.debug_msg :
                 print("eps: ", eps)
-            
-            # Stop training if the error rate is too small
-            if eps < 1e-20 :
-                if self.debug_msg :
-                    print("eps == {}. Break".format(eps))
-                break
                 
             # Compute weight of decision tree
             alpha = (0.5)*np.log( (n_class-1)*(1-eps)/eps )
             if self.debug_msg:
                 print("Alpha:", alpha)
+                
+            # Record eps and alpha
+            self.all_eps.append(eps)
+            self.all_alphas.append(alpha)
+                
+            # Stop training if the error rate is too small
+            if eps < 1e-20 :
+                if self.debug_msg :
+                    print("eps == {}. Break".format(eps))
+                break
 
             # Update weight of training sample
             if alpha > 0 :
@@ -176,4 +184,5 @@ class BoostedRandomForest :
         ensemble_pred[ensemble_prob<0.5]=0
         
         return ensemble_pred
-        
+    
+    
