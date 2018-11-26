@@ -6,7 +6,7 @@ import numpy as np
 import random
 
 class BoostedRandomForest :
-    def __init__(self, T=50, sample_portion=0.6, depth_max=5, criterion='entropy', weight_update=True, boosting=True, debug_msg=False, verbose=False) :
+    def __init__(self, T=50, sample_portion=0.6, depth_max=5, criterion='entropy', eps_ub=1, eps_lb=0, eps_exceed_limit=5, weight_update=True, boosting=True, debug_msg=False, verbose=False) :
         # Inputs 
         # Max number of trees to be trained
         self.T = T
@@ -18,14 +18,23 @@ class BoostedRandomForest :
         self.weight_update = weight_update
         # Criterion to train a random tree
         self.criterion = criterion
+        # Upper bound of epsilon to stop training trees
+        self.eps_ub = eps_ub
+        # Lower bound of epsilon to stop training trees
+        self.eps_lb = eps_lb
+        # Number of times epsilon is allowed to exceed the boundaries
+        self.eps_exceed_limit = eps_exceed_limit
         # Determine if boosting is applied during training
         self.boosting = boosting
         # Determine if debug messages are printed
         self.debug_msg = debug_msg
         # Enable verbose output of training process
         self.verbose = verbose
+        ###################################################################
         
-        # List for training results
+        # Class variables
+        # Number of times epsilon exceeeded boundaries
+        self.eps_exceed_cnt = 0
         # List of trained randome tree classifiers
         self.clfs = []
         # List of weights to trained trees
@@ -38,6 +47,7 @@ class BoostedRandomForest :
         self.all_eps = []
         # List of tree weights for all trees trained (incl. rejected trees)
         self.all_alphas = []
+        ###################################################################
     
     
     # Train boosted random forest
@@ -99,11 +109,17 @@ class BoostedRandomForest :
             self.all_eps.append(eps)
             self.all_alphas.append(alpha)
                 
-            # Stop training if the error rate is too small
-            if eps < 1e-20 :
-                if self.debug_msg :
-                    print("eps == {}. Break".format(eps))
-                break
+            # Stop training if the error rate is too small or too large
+            if eps < self.eps_lb or self.eps_ub < eps :
+                # Increment epsilon exceed counter
+                self.eps_exceed_cnt += 1
+                # If epsilon is outside limits too many times, 
+                # stop training new trees.
+                if self.eps_exceed_cnt > self.eps_exceed_limit :
+                    if self.debug_msg :
+                        print("eps == {}. Break".format(eps))
+                    break
+                
 
             # Update weight of training sample
             if alpha > 0 :
