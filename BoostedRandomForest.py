@@ -41,6 +41,8 @@ class BoostedRandomForest :
         self.stop_index = -1
         # List of trained randome tree classifiers
         self.clfs = []
+        # List of ids of accepted trained classifier
+        self.clf_ids = []
         # List of weights to trained trees
         self.alphas = []
         # features selected for each tree in forest
@@ -152,6 +154,8 @@ class BoostedRandomForest :
 
                 # Save trained tree to list 
                 self.clfs.append(clf)
+                # Record the id of clf saved
+                self.clf_ids.append(i)
                 # Save alpha to list
                 self.alphas.append(alpha)
 
