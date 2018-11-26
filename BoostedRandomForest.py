@@ -6,7 +6,7 @@ import numpy as np
 import random
 
 class BoostedRandomForest :
-    def __init__(self, T=50, sample_portion=0.6, depth_max=5, criterion='entropy', eps_ub=1, eps_lb=0, eps_exceed_limit=5, weight_update=True, boosting=True, debug_msg=False, verbose=False) :
+    def __init__(self, T=50, sample_portion=0.6, depth_max=5, criterion='entropy', eps_ub=1, eps_lb=0, eps_exceed_limit=5, early_stop=True, weight_update=True, boosting=True, debug_msg=False, verbose=False) :
         # Inputs 
         # Max number of trees to be trained
         self.T = T
@@ -24,6 +24,8 @@ class BoostedRandomForest :
         self.eps_lb = eps_lb
         # Number of times epsilon is allowed to exceed the boundaries
         self.eps_exceed_limit = eps_exceed_limit
+        # Enable early stopping if epsilon exceeds limit
+        self.early_stop = early_stop
         # Determine if boosting is applied during training
         self.boosting = boosting
         # Determine if debug messages are printed
@@ -35,6 +37,8 @@ class BoostedRandomForest :
         # Class variables
         # Number of times epsilon exceeeded boundaries
         self.eps_exceed_cnt = 0
+        # The index of tree where early stopping happens
+        self.stop_index = -1
         # List of trained randome tree classifiers
         self.clfs = []
         # List of weights to trained trees
@@ -113,12 +117,23 @@ class BoostedRandomForest :
             if eps < self.eps_lb or self.eps_ub < eps :
                 # Increment epsilon exceed counter
                 self.eps_exceed_cnt += 1
+
                 # If epsilon is outside limits too many times, 
+                # and not yet stopped, 
                 # stop training new trees.
-                if self.eps_exceed_cnt > self.eps_exceed_limit :
+                if ((self.eps_exceed_cnt > self.eps_exceed_limit) 
+                    and (self.stop_index == -1)) :
+                    # Save the index of tree when early stopping happens
+                    self.stop_index = len(self.clfs)
+                    
+                    # Print debug message
                     if self.debug_msg :
                         print("eps == {}. Break".format(eps))
-                    break
+                        
+                    # Stop training new trees if early stopping is enabled
+                    # Else, continue on 
+                    if self.early_stop :
+                        break
                 
 
             # Update weight of training sample
