@@ -147,10 +147,12 @@ class BoostedRandomForest :
                 if self.weight_update==True:
                     #with updating
                     W = m*np.multiply(W, exp_alphas) / np.sum(np.multiply(W, exp_alphas))
+                """
                 else:
-                    #weihtout updating
+                    #without updating
                     W = [1.0/m for i in range(0,m,1)]
                     W = pd.DataFrame({'Weight':list(W)}, index=X.index)
+                """ 
 
                 # Save trained tree to list 
                 self.clfs.append(clf)
