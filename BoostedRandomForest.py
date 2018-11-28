@@ -6,7 +6,7 @@ import numpy as np
 import random
 
 class BoostedRandomForest :
-    def __init__(self, T=50, sample_portion=0.6, depth_max=5, criterion='entropy', eps_ub=1, eps_lb=0, eps_exceed_limit=5, early_stop=True, weight_update=True, boosting=True, debug_msg=False, verbose=False) :
+    def __init__(self, T=50, sample_portion=0.6, depth_max=5, criterion='entropy', eps_ub=1, eps_lb=0, eps_exceed_limit=5, early_stop=False, weight_update=True, boosting=True, debug_msg=False, verbose=False) :
         # Inputs 
         # Max number of trees to be trained
         self.T = T
